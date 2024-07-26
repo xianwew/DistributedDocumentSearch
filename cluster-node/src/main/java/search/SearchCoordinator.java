@@ -164,9 +164,15 @@ public class SearchCoordinator implements OnRequestCallback {
 
     private static List<String> readDocumentsList() {
         File documentsDirectory = new File(BOOKS_DIRECTORY);
-        return Arrays.asList(documentsDirectory.list())
-                .stream()
+        String[] documentsArray = documentsDirectory.list();
+
+        if (documentsArray == null) {
+            throw new IllegalArgumentException("The directory " + BOOKS_DIRECTORY + " does not exist or an I/O error occurred.");
+        }
+
+        return Arrays.stream(documentsArray)
                 .map(documentName -> BOOKS_DIRECTORY + "/" + documentName)
                 .collect(Collectors.toList());
     }
+
 }
