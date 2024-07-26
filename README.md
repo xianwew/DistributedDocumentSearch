@@ -6,7 +6,7 @@
 
 [**1, System Architecture Components**](#System-Architecture-Components)
 
-[**2, Leader Election/Re-Election Algorithm Implementation with Failover**](#Leader-Election/Re-Election-Algorithm-Implementation-with-Failover)
+[**2, Leader Election/Re-Election Algorithm Implementation with Failover**](#leader-electionre-election-algorithm-implementation-with-failover)
 
 [**3, Introduction to TFIDF (Term Frequency - Inverse Document Frequency)**](#introduction-to-tfidf-term-frequency---inverse-document-frequency)
 
