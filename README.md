@@ -1,5 +1,4 @@
-TF-IDF Based ****Distributed Document Search
-
+# TF-IDF Based Distributed Document Search Project
 
 # ![](https://lh7-rt.googleusercontent.com/docsz/AD_4nXfNz567OjsKiQfeWJUsiCOZO4d5iGdE9Fu7-V4gBT8L4Co7JsQdwQ348q2mLiV3n5I57-6yGPfFkM_0USC8CUnCWw5pmobDIxvuLTLw3yexlu_ePHgWLICGPYci4UUsUsp3GqlzgOusrzhtsPaj01mB-_u1?key=-f-cbJ1PCIJGR4KMIdSdGg)
 
@@ -9,7 +8,7 @@ TF-IDF Based ****Distributed Document Search
 
 [**2, Leader Election/Re-Election Algorithm Implementation with Failover**](#Leader-Election/Re-Election-Algorithm-Implementation-with-Failover)
 
-[**3, Introduction to TFIDF (Term Frequency - Inverse Document Frequency)**](#Introduction-to-TFIDF (Term Frequency - Inverse Document Frequency))
+[**3, Introduction to TFIDF (Term Frequency - Inverse Document Frequency)**](#introduction-to-tfidf-term-frequency-inverse-document-frequency)
 
 [**4, Communication and Data Delivery Between Servers**](#Communication-and-Data-Delivery-Between-Servers)
 
