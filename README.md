@@ -160,9 +160,9 @@ The TFIDF algorithm is used to rank documents based on their relevance to a sear
 
 - **Term "the"**: Appears in all 10 documents, IDF = log(10/10) = 0.
 
-- **Term "big"**: Appears in 3 documents, IDF = log(10/3) = 0.3.
+- **Term "big"**: Appears in 3 documents, IDF = log(10/3) = 0.52.
 
-- **Term "plane"**: Appears in 2 documents, IDF = log(10/2).
+- **Term "plane"**: Appears in 2 documents, IDF = log(10/2) = 0.69.
 
 Documents containing rare terms like "plane" score higher than those with common terms like "the".
 
