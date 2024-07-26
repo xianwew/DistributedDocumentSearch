@@ -1,6 +1,6 @@
 # TF-IDF Based Distributed Document Search Project
 
-# ![](https://lh7-rt.googleusercontent.com/docsz/AD_4nXfNz567OjsKiQfeWJUsiCOZO4d5iGdE9Fu7-V4gBT8L4Co7JsQdwQ348q2mLiV3n5I57-6yGPfFkM_0USC8CUnCWw5pmobDIxvuLTLw3yexlu_ePHgWLICGPYci4UUsUsp3GqlzgOusrzhtsPaj01mB-_u1?key=-f-cbJ1PCIJGR4KMIdSdGg)
+# ![](https://lh7-rt.googleusercontent.com/docsz/AD_4nXd4E_JhTbjwVRaK0Ix8yXuQBPVNTnAs6RhkHvGClkL8CjRPrS4XougcL0LSQnhb8aP0WTsxzCAxmOjJ3SBK6t3zDm7odVcNhK2gkkaH9BIB8kQqjo6tF6dQMaBytA140nRDpanfINKNxmxQbTW81Du2Ivm3?key=-f-cbJ1PCIJGR4KMIdSdGg)
 
 # Quick Link
 
