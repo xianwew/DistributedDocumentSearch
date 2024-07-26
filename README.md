@@ -8,7 +8,7 @@
 
 [**2, Leader Election/Re-Election Algorithm Implementation with Failover**](#Leader-Election/Re-Election-Algorithm-Implementation-with-Failover)
 
-[**3, Introduction to TFIDF (Term Frequency - Inverse Document Frequency)**](#introduction-to-tfidf-term-frequency-inverse-document-frequency)
+[**3, Introduction to TFIDF (Term Frequency - Inverse Document Frequency)**](#introduction-to-tfidf-term-frequency---inverse-document-frequency)
 
 [**4, Communication and Data Delivery Between Servers**](#Communication-and-Data-Delivery-Between-Servers)
 
