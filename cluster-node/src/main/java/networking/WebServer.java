@@ -1,74 +1,64 @@
 package networking;
 
-import com.sun.net.httpserver.HttpContext;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
+import io.grpc.BindableService;
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
+import io.grpc.stub.StreamObserver;
+import model.proto.SearchModel.Request;
+import model.proto.SearchModel.Response;
+import model.proto.SearchServiceGrpc;
+
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
 
 public class WebServer {
-    private static final String STATUS_ENDPOINT = "/status";
-
     private final int port;
-    private HttpServer server;
+    private final Server server;
     private final OnRequestCallback requestCallback;
 
     public WebServer(int port, OnRequestCallback requestCallback) {
         this.port = port;
         this.requestCallback = requestCallback;
+        this.server = ServerBuilder.forPort(port)
+                .addService(new SearchServiceImpl())
+                .build();
     }
 
-    public void startServer() {
-        try {
-            this.server = HttpServer.create(new InetSocketAddress(port), 0);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        HttpContext statusContext = server.createContext(STATUS_ENDPOINT);
-        HttpContext taskContext = server.createContext(requestCallback.getEndpoint());
-
-        statusContext.setHandler(this::handleStatusCheckRequest);
-        taskContext.setHandler(this::handleTaskRequest);
-
-        server.setExecutor(Executors.newFixedThreadPool(8));
+    public void startServer() throws IOException {
         server.start();
+        System.out.println("Server started, listening on " + port);
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.err.println("Shutting down gRPC server since JVM is shutting down");
+            try {
+                WebServer.this.stop();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.err.println("Server shut down");
+        }));
     }
 
-    private void handleTaskRequest(HttpExchange exchange) throws IOException {
-        if (!exchange.getRequestMethod().equalsIgnoreCase("post")) {
-            exchange.close();
-            return;
+    public void stop() throws InterruptedException {
+        if (server != null) {
+            server.shutdown().awaitTermination(30, java.util.concurrent.TimeUnit.SECONDS);
         }
-
-        byte[] responseBytes = requestCallback.handleRequest(exchange.getRequestBody().readAllBytes());
-
-        sendResponse(responseBytes, exchange);
     }
 
-    private void handleStatusCheckRequest(HttpExchange exchange) throws IOException {
-        if (!exchange.getRequestMethod().equalsIgnoreCase("get")) {
-            exchange.close();
-            return;
+    private class SearchServiceImpl extends SearchServiceGrpc.SearchServiceImplBase {
+        @Override
+        public void search(Request request, StreamObserver<Response> responseObserver) {
+            // Handle the request using the callback
+            byte[] requestPayload = request.toByteArray();
+            byte[] responseBytes = requestCallback.handleRequest(requestPayload);
+            Response response;
+            try {
+                response = Response.parseFrom(responseBytes);
+            } catch (IOException e) {
+                responseObserver.onError(e);
+                return;
+            }
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
         }
-
-        String responseMessage = "Server is alive\n";
-        sendResponse(responseMessage.getBytes(), exchange);
-    }
-
-    private void sendResponse(byte[] responseBytes, HttpExchange exchange) throws IOException {
-        exchange.sendResponseHeaders(200, responseBytes.length);
-        OutputStream outputStream = exchange.getResponseBody();
-        outputStream.write(responseBytes);
-        outputStream.flush();
-        outputStream.close();
-    }
-
-    public void stop() {
-        server.stop(10);
     }
 }

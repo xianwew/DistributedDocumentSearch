@@ -109,21 +109,22 @@ public class SearchCoordinator implements OnRequestCallback {
     }
 
     private List<Result> sendTasksToWorkers(List<String> workers, List<Task> tasks) {
-        CompletableFuture<Result>[] futures = new CompletableFuture[workers.size()];
+        CompletableFuture<SearchModel.Response>[] futures = new CompletableFuture[workers.size()];
         for (int i = 0; i < workers.size(); i++) {
-            String worker = workers.get(i);
             Task task = tasks.get(i);
             byte[] payload = SerializationUtils.serialize(task);
 
-            futures[i] = client.sendTask(worker, payload);
+            futures[i] = client.sendTask(payload);
         }
 
         List<Result> results = new ArrayList<>();
-        for (CompletableFuture<Result> future : futures) {
+        for (CompletableFuture<SearchModel.Response> future : futures) {
             try {
-                Result result = future.get();
+                SearchModel.Response response = future.get();
+                Result result = Result.fromProto(response);
                 results.add(result);
             } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
             }
         }
         System.out.println(String.format("Received %d/%d results", results.size(), tasks.size()));
@@ -174,5 +175,4 @@ public class SearchCoordinator implements OnRequestCallback {
                 .map(documentName -> BOOKS_DIRECTORY + "/" + documentName)
                 .collect(Collectors.toList());
     }
-
 }

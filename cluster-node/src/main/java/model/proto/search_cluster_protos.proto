@@ -25,3 +25,7 @@ message Response {
         optional string author = 4;
     }
 }
+
+service SearchService {
+    rpc Search(Request) returns (Response);
+}

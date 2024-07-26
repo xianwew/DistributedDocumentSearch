@@ -1,3 +1,8 @@
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.concurrent.Executors;
+
 import cluster.management.OnElectionCallback;
 import cluster.management.ServiceRegistry;
 import networking.WebClient;
@@ -5,9 +10,6 @@ import networking.WebServer;
 import org.apache.zookeeper.KeeperException;
 import search.SearchCoordinator;
 import search.SearchWorker;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 public class OnElectionAction implements OnElectionCallback {
     private final ServiceRegistry workersServiceRegistry;
@@ -29,39 +31,45 @@ public class OnElectionAction implements OnElectionCallback {
         workersServiceRegistry.registerForUpdates();
 
         if (webServer != null) {
-            webServer.stop();
+            try {
+                webServer.stop();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-
-        SearchCoordinator searchCoordinator = new SearchCoordinator(workersServiceRegistry, new WebClient());
-        webServer = new WebServer(port, searchCoordinator);
-        webServer.startServer();
 
         try {
-            String currentServerAddress =
-                    String.format("http://%s:%d%s", InetAddress.getLocalHost().getCanonicalHostName(), port, searchCoordinator.getEndpoint());
+            String currentServerAddress = String.format("%s:%d", InetAddress.getLoopbackAddress().getHostAddress(), port);
+            SearchCoordinator searchCoordinator = new SearchCoordinator(workersServiceRegistry, new WebClient(InetAddress.getLoopbackAddress().getHostAddress(), port));
+            webServer = new WebServer(port, searchCoordinator);
+            webServer.startServer();
             coordinatorsServiceRegistry.registerToCluster(currentServerAddress);
-        } catch (InterruptedException | UnknownHostException | KeeperException e) {
+        } catch (IOException | KeeperException | InterruptedException e) {
             e.printStackTrace();
-            return;
         }
     }
+
+    //            String currentServerAddress = String.format("%s:%d", InetAddress.getLocalHost().getHostAddress(), port);
 
     @Override
     public void onWorker() {
         SearchWorker searchWorker = new SearchWorker();
         if (webServer == null) {
             webServer = new WebServer(port, searchWorker);
-            webServer.startServer();
+            try {
+                webServer.startServer();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         try {
             String currentServerAddress =
-                    String.format("http://%s:%d%s", InetAddress.getLocalHost().getCanonicalHostName(), port, searchWorker.getEndpoint());
-
+                    String.format("%s:%d", InetAddress.getLocalHost().getCanonicalHostName(), port);
             workersServiceRegistry.registerToCluster(currentServerAddress);
-        } catch (InterruptedException | UnknownHostException | KeeperException e) {
+        } catch (UnknownHostException | KeeperException | InterruptedException e) {
             e.printStackTrace();
-            return;
         }
     }
 }
+

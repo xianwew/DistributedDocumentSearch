@@ -1,31 +1,57 @@
 package networking;
 
-import model.Result;
-import model.SerializationUtils;
+import com.google.protobuf.InvalidProtocolBufferException;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.StreamObserver;
+import model.proto.SearchModel.Request;
+import model.proto.SearchModel.Response;
+import model.proto.SearchServiceGrpc;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class WebClient {
-    private HttpClient client;
+    private final ManagedChannel channel;
+    private final SearchServiceGrpc.SearchServiceStub asyncStub;
 
-    public WebClient() {
-        this.client = HttpClient.newBuilder()
-                .version(HttpClient.Version.HTTP_1_1)
+    public WebClient(String host, int port) {
+        this.channel = ManagedChannelBuilder.forAddress(host, port)
+                .usePlaintext()
                 .build();
+        this.asyncStub = SearchServiceGrpc.newStub(channel);
     }
 
-    public CompletableFuture<Result> sendTask(String url, byte[] requestPayload) {
-        HttpRequest request = HttpRequest.newBuilder()
-                .POST(HttpRequest.BodyPublishers.ofByteArray(requestPayload))
-                .uri(URI.create(url))
-                .build();
+    public CompletableFuture<Response> sendTask(byte[] payload) {
+        CompletableFuture<Response> future = new CompletableFuture<>();
+        Request request;
+        try {
+            request = Request.parseFrom(payload);
+        } catch (InvalidProtocolBufferException e) {
+            future.completeExceptionally(e);
+            return future;
+        }
 
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofByteArray())
-                .thenApply(HttpResponse::body)
-                .thenApply(responseBody -> (Result) SerializationUtils.deserialize(responseBody));
+        asyncStub.search(request, new StreamObserver<Response>() {
+            @Override
+            public void onNext(Response response) {
+                future.complete(response);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                future.completeExceptionally(t);
+            }
+
+            @Override
+            public void onCompleted() {
+                // No-op
+            }
+        });
+
+        return future;
+    }
+
+    public void shutdown() throws InterruptedException {
+        channel.shutdown().awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS);
     }
 }
