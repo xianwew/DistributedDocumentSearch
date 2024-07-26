@@ -6,7 +6,7 @@
 
 [**1, System Architecture Components**](#System-Architecture-Components)
 
-[**2, Leader Election/Re-Election Algorithm Implementation with Failover**](#leader-electionre-election-algorithm-implementation-with-failover)
+[**2, Leader Election/Re-Election Algorithm Implementation**](#leader-electionre-election-algorithm-implementation)
 
 [**3, Introduction to TFIDF (Term Frequency - Inverse Document Frequency)**](#introduction-to-tfidf-term-frequency---inverse-document-frequency)
 
@@ -60,7 +60,7 @@
 - **Function**: Processes search tasks assigned by the coordinator and returns the results.
 
 
-# Leader Election/Re-Election Algorithm Implementation with Failover
+# Leader Election/Re-Election Algorithm Implementation
 
 Leader election is a critical component in ensuring that the distributed system has a single coordinator managing tasks at any given time. The Watch-based Predecessor Notification algorithm uses ZooKeeper to elect a leader among the nodes.
 
